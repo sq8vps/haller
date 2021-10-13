@@ -40,7 +40,8 @@
 #endif /* WITH_RTOS */
 
 /* USER CODE BEGIN 0 */
-
+ void MX_LWIP_HandleTimeouts(void);
+ void MX_LWIP_ProcessRx(void);
 /* USER CODE END 0 */
 
 /* Global Variables ----------------------------------------------------------*/

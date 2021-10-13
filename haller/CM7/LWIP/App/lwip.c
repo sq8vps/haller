@@ -50,7 +50,16 @@ uint8_t NETMASK_ADDRESS[4];
 uint8_t GATEWAY_ADDRESS[4];
 
 /* USER CODE BEGIN 2 */
-
+void MX_LWIP_HandleTimeouts(void)
+{
+	sys_check_timeouts();
+	Ethernet_Link_Periodic_Handle(&gnetif);
+}
+void MX_LWIP_ProcessRx(void)
+{
+	ethernetif_input(&gnetif);
+	MX_LWIP_HandleTimeouts();
+}
 /* USER CODE END 2 */
 
 /**
@@ -151,6 +160,7 @@ static void Ethernet_Link_Periodic_Handle(struct netif *netif)
 void MX_LWIP_Process(void)
 {
 /* USER CODE BEGIN 4_1 */
+
 /* USER CODE END 4_1 */
   ethernetif_input(&gnetif);
 

@@ -194,6 +194,7 @@ RCC.FamilyName=M
 PH1-OSC_OUT\ (PH1).Signal=RCC_OSC_OUT
 PG13.PinAttribute=CortexM7
 VP_LWIP_VS_Enabled.Mode=Enabled
+NVIC1.ETH_IRQn=true\:0\:0\:false\:false\:true\:true\:true
 PB13.PinAttribute=CortexM7
 PD8.GPIO_Label=STLINK_RX
 ETH.IPParameters=MediaInterface

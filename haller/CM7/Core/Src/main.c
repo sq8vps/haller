@@ -62,10 +62,7 @@ static void MX_USART3_UART_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-void HAL_ETH_RxCpltCallback(ETH_HandleTypeDef *heth)
-{
-	asm("nop");
-}
+
 /* USER CODE END 0 */
 
 /**
@@ -135,10 +132,9 @@ Error_Handler();
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  MX_LWIP_HandleTimeouts();
     /* USER CODE END WHILE */
-	  //sys_check_timeouts();
 
-	  //Ethernet_Link_Periodic_Handle(&gnetif);
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
