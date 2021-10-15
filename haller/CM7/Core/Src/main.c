@@ -20,10 +20,11 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "lwip.h"
-
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "stm32h7xx_hal.h"
+#include <string.h>
+#include "lan.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -62,7 +63,10 @@ static void MX_USART3_UART_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+void rxHandler(uint8_t *buf, uint16_t *len)
+{
+	asm("nop");
+}
 /* USER CODE END 0 */
 
 /**
@@ -125,15 +129,16 @@ Error_Handler();
   MX_USART3_UART_Init();
   MX_LWIP_Init();
   /* USER CODE BEGIN 2 */
-
+  Lan_init(&rxHandler);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  MX_LWIP_HandleTimeouts();
+
     /* USER CODE END WHILE */
+	  Lan_refresh();
 
     /* USER CODE BEGIN 3 */
   }
