@@ -25,6 +25,7 @@
 #include "stm32h7xx_hal.h"
 #include <string.h>
 #include "lan.h"
+#include "proto.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -63,10 +64,7 @@ static void MX_USART3_UART_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-void rxHandler(uint8_t *buf, uint16_t *len)
-{
-	asm("nop");
-}
+
 /* USER CODE END 0 */
 
 /**
@@ -129,7 +127,7 @@ Error_Handler();
   MX_USART3_UART_Init();
   MX_LWIP_Init();
   /* USER CODE BEGIN 2 */
-  Lan_init(&rxHandler);
+  Lan_init(&Proto_parse);
   /* USER CODE END 2 */
 
   /* Infinite loop */
