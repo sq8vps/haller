@@ -1,6 +1,9 @@
 #include "proto.h"
 
+#include "motor.h"
+
 void proto_dummy_handler(uint8_t id, uint8_t *buf, uint8_t len);
+void proto_motor_wrapper(uint8_t id, uint8_t *buf, uint8_t len);
 
 #define NULL (void*)0
 
@@ -16,7 +19,7 @@ struct proto_module
 
 struct proto_module proto_module_list[MODULES_COUNT] = {
 		{MODULE_NONE, &proto_dummy_handler},
-
+		{MODULE_STEVAL, &proto_motor_wrapper},
 };
 
 
@@ -59,4 +62,11 @@ void Proto_parse(uint8_t *buf, uint16_t *len)
 void proto_dummy_handler(uint8_t id, uint8_t *buf, uint8_t len)
 {
 
+}
+
+void proto_motor_wrapper(uint8_t id, uint8_t *buf, uint8_t len)
+{
+	uint16_t torque[MOTOR_COUNT];
+	memcpy(torque, buf, 2 * MOTOR_COUNT);
+	Motor_send(torque);
 }
