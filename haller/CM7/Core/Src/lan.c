@@ -55,8 +55,7 @@ static void lan_tcpError(void *arg, err_t err)
 	{
 		Lan_state.tcpConnWaiting = 0;
 		Lan_state.tcpConnected = 0;
-		if(tcp == NULL)
-			lan_tcpInit();
+		lan_tcpInit();
 	}
 }
 
@@ -69,8 +68,8 @@ static err_t lan_tcpSent(void *arg, struct tcp_pcb *tpcb, u16_t len)
 
 static void lan_tcpInit(void)
 {
-	if(tcp != NULL)
-		return;
+	//if(tcp != NULL)
+	//	return;
 
 	tcp = tcp_new();
 	if(tcp == NULL)
@@ -91,8 +90,8 @@ static void lan_tcpInit(void)
 
 static void lan_udpInit(void)
 {
-	if(udp != NULL)
-		return;
+	//if(udp != NULL)
+	//	return;
 
 	udp = udp_new(); //initialize UDP structure
 	if(udp == NULL)
@@ -177,7 +176,7 @@ void Lan_init(void (*rxCallbackFun)(uint8_t*, uint16_t*))
 void Lan_refresh(void)
 {
 	MX_LWIP_HandleTimeouts();
-	if(Lan_state.tcpConnected == 0) //TCP not connected
+	/*if(Lan_state.tcpConnected == 0) //TCP not connected
 	{
 		if(Lan_state.tcpConnWaiting) //but the connection was initialized
 		{
@@ -195,5 +194,5 @@ void Lan_refresh(void)
 			lan_tcpConnect();
 			Lan_state.tcpConnTimeout = HAL_GetTick() + (TCP_CONN_TIMEOUT / HAL_GetTickFreq());
 		}
-	}
+	}*/
 }

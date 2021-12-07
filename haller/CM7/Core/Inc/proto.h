@@ -6,9 +6,7 @@
 typedef enum
 {
 	MODULE_NONE = 0x00,
-	MODULE_STEVAL = 0x01,
-
-
+	MODULE_STEVAL = 0x02,
 } Module_id;
 
 /**

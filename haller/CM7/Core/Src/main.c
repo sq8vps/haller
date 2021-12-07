@@ -134,8 +134,6 @@ Error_Handler();
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
   Lan_init(&Proto_parse);
-  uint16_t t[5] = {1800, 1800, 1800, 1800};
-  Motor_sendData(t);
   /* USER CODE END 2 */
 
   /* Infinite loop */
