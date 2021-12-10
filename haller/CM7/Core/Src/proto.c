@@ -2,6 +2,7 @@
 
 #include "motor.h"
 #include <string.h>
+#include "CommunicationCodes.h"
 
 void proto_dummy_handler(uint8_t id, uint8_t *buf, uint8_t len);
 void proto_motor_wrapper(uint8_t id, uint8_t *buf, uint8_t len);
@@ -11,15 +12,17 @@ void proto_motor_wrapper(uint8_t id, uint8_t *buf, uint8_t len);
 
 struct proto_module
 {
-	Module_id id;
+	enum Command id;
 	void (*callback)(uint8_t, uint8_t*, uint8_t);
 };
 
 #define MODULES_COUNT 2
 
 struct proto_module proto_module_list[MODULES_COUNT] = {
-		{MODULE_NONE, &proto_dummy_handler},
-		{MODULE_STEVAL, &proto_motor_wrapper},
+		{255, &proto_dummy_handler},
+
+
+		{NORESPREQ_SET_THRUSTERS, &proto_motor_wrapper},
 };
 
 

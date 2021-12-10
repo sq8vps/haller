@@ -34,7 +34,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Connect UDP</string>
+     <string>Open UDP</string>
     </property>
    </widget>
    <widget class="QPushButton" name="Disconnect">
@@ -47,7 +47,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Disconnect TCP</string>
+     <string>Stop TCP server</string>
     </property>
    </widget>
    <widget class="QLabel" name="label">
@@ -99,7 +99,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Connect TCP</string>
+     <string>Start TCP server</string>
     </property>
    </widget>
    <widget class="QPushButton" name="DisconnectUdp">
@@ -112,7 +112,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Disconnect UDP</string>
+     <string>Close UDP</string>
     </property>
    </widget>
    <widget class="QGroupBox" name="groupBox">
@@ -289,7 +289,7 @@
      <x>0</x>
      <y>0</y>
      <width>1400</width>
-     <height>26</height>
+     <height>20</height>
     </rect>
    </property>
   </widget>

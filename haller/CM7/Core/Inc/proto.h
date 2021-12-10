@@ -3,11 +3,6 @@
 
 #include <stdint.h>
 
-typedef enum
-{
-	MODULE_NONE = 0x00,
-	MODULE_STEVAL = 0x02,
-} Module_id;
 
 /**
  * @brief Parse incoming packet and pass data to appropriate module handler

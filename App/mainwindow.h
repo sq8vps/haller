@@ -2,11 +2,9 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "TcpClient.h"
-#include <QUdpSocket>
+#include "TcpUdp.h"
 
-#define ADDRESS     "169.254.69.69"
-#define PORT        4242
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -21,30 +19,22 @@ public:
     ~MainWindow();
 
 private slots:
-    void addToLogs(QString message);
-    void TcpNewConnectionLogs();
-    void TcpNewDisconnectionLogs();
-    void TcpNewTcpReceiveLogs();
-
     void on_Connect_clicked();
-
     void on_Disconnect_clicked();
-    void processPendingDatagrams();
     void on_clear_clicked();
-
     void on_ConnectUdp_clicked();
-
     void on_DisconnectUdp_clicked();
-
     void on_stopMotors_clicked();
-
     void on_CommitMotors_clicked();
-
     void on_close_clicked();
 
+    void onReceived(QByteArray data);
+    void onClientConnected();
+    void onClientDisconnected();
+
 private:
+    void addToLogs(QString message);
     Ui::MainWindow *ui;
-    TcpClient rov_tcp_client;
-    QUdpSocket *socket=nullptr;;
+    TcpUdp tcpUdp;
 };
 #endif // MAINWINDOW_H
