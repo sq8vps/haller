@@ -2,6 +2,7 @@
 #include "TcpUdp.h"
 #include "ui_mainwindow.h"
 #include <../auvConfig/CommunicationCodes.h>
+#include <math.h>
 
 
 MainWindow::MainWindow(QWidget *parent):
@@ -12,10 +13,71 @@ ui(new Ui::MainWindow) {
   connect(&tcpUdp, SIGNAL(onClientConnected()), this, SLOT(onClientConnected()));
   connect(&tcpUdp, SIGNAL(onClientDisconnected()), this, SLOT(onClientDisconnected()));
   connect(&tcpUdp, SIGNAL(onReceived(QByteArray)), this, SLOT(onReceived(QByteArray)));
+  timer = new QTimer(this);
+  connect(timer, &QTimer::timeout, this, &MainWindow::timerTick);
+  rampMode = RAMP_MOTORS;
 }
 
 MainWindow::~MainWindow(){
     delete ui;
+}
+
+void MainWindow::timerTick()
+{
+    if(rampMode == RAMP_MOTORS)
+    {
+        QVarLengthArray<quint8> bytes;
+            bytes.clear();
+
+            static float arg = 0.f;
+            arg += 3.14f / 20.f;
+            if(arg > 6.28f)
+                arg = 0.f;
+
+            // construct motor control mesage
+            bytes.append(NORESPREQ_SET_THRUSTERS); // steval id
+            bytes.append(5); // payload size
+            quint16 value = static_cast<quint16>((sinf(arg) + 1.f) * 1000.f);
+            for(int i=0;i<5;i++){
+
+                bytes.append(value & 0xFF);
+                bytes.append((value & 0xFF00) >> 8);
+            }
+
+            // convet to QByteArray
+            QByteArray motor_control_message;
+                motor_control_message.clear();
+            for (int i =0; i < bytes.length();i++){
+                motor_control_message.append(static_cast<char>(bytes[i]));
+            }
+            tcpUdp.udp_send(motor_control_message);
+            //socket->write(motor_control_message,motor_control_message.size());
+    }
+    else
+    {
+        QVarLengthArray<quint8> bytes;
+        bytes.clear();
+
+            bytes.append(NORESPREQ_SET_SERVOS);
+            bytes.append(2); // payload size
+            bytes.append(4);
+            bytes.append(0);
+            static float arg = 0.f;
+            arg += 3.14f / 20.f;
+            if(arg > 6.28f)
+                arg = 0.f;
+            bytes.append(static_cast<quint8>((sinf(arg) + 1.f) * 50.f));
+            bytes.append(0);
+            // convet to QByteArray
+            QByteArray motor_control_message;
+            motor_control_message.clear();
+            for (int i =0; i < bytes.length(); i++)
+            {
+                motor_control_message.append(static_cast<char>(bytes[i]));
+            }
+           // tcpUdp.tcp_send(motor_control_message);
+            tcpUdp.udp_send(motor_control_message);
+    }
 }
 
 void MainWindow::addToLogs(QString message){
@@ -150,3 +212,74 @@ void MainWindow::on_close_clicked()
     close();
 }
 
+void MainWindow::sendServo(int no, int val)
+{
+    this->addToLogs("Setting servo");
+    QVarLengthArray<quint8> bytes;
+    bytes.clear();
+
+    // construct motor control mesage
+        bytes.append(NORESPREQ_SET_SERVOS);
+        bytes.append(2); // payload size
+        bytes.append(static_cast<quint8>(no));
+        bytes.append(0);
+        bytes.append(static_cast<quint8>(val));
+        bytes.append(0);
+        // convet to QByteArray
+        QByteArray motor_control_message;
+        motor_control_message.clear();
+        for (int i =0; i < bytes.length(); i++)
+        {
+            motor_control_message.append(static_cast<char>(bytes[i]));
+        }
+       // tcpUdp.tcp_send(motor_control_message);
+        tcpUdp.udp_send(motor_control_message);
+}
+
+
+void MainWindow::on_horizontalSlider_valueChanged(int value)
+{
+    sendServo(0, value);
+}
+
+void MainWindow::on_horizontalSlider_2_valueChanged(int value)
+{
+    sendServo(1, value);
+}
+
+void MainWindow::on_horizontalSlider_3_valueChanged(int value)
+{
+    sendServo(2, value);
+}
+
+void MainWindow::on_horizontalSlider_4_valueChanged(int value)
+{
+    sendServo(3, value);
+}
+
+void MainWindow::on_horizontalSlider_5_valueChanged(int value)
+{
+    sendServo(4, value);
+}
+
+void MainWindow::on_horizontalSlider_6_valueChanged(int value)
+{
+    sendServo(5, value);
+}
+
+void MainWindow::on_pushButton_2_clicked()
+{
+    timer->start(ui->lineEdit->text().toInt());
+    rampMode = RAMP_SERVOS;
+}
+
+void MainWindow::on_pushButton_clicked()
+{
+    timer->start(ui->lineEdit->text().toInt());
+    rampMode = RAMP_MOTORS;
+}
+
+void MainWindow::on_pushButton_3_clicked()
+{
+    timer->stop();
+}

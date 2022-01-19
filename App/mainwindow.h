@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 #include "TcpUdp.h"
-
+#include <QTimer>
 
 
 QT_BEGIN_NAMESPACE
@@ -32,9 +32,37 @@ private slots:
     void onClientConnected();
     void onClientDisconnected();
 
+    void on_horizontalSlider_valueChanged(int value);
+
+    void on_horizontalSlider_2_valueChanged(int value);
+
+    void on_horizontalSlider_3_valueChanged(int value);
+
+    void on_horizontalSlider_4_valueChanged(int value);
+
+    void on_horizontalSlider_5_valueChanged(int value);
+
+    void on_horizontalSlider_6_valueChanged(int value);
+
+    void timerTick();
+
+    void on_pushButton_2_clicked();
+
+    void on_pushButton_clicked();
+
+    void on_pushButton_3_clicked();
+
 private:
     void addToLogs(QString message);
     Ui::MainWindow *ui;
     TcpUdp tcpUdp;
+    void sendServo(int no, int val);
+    QTimer *timer;
+    enum RampMode
+    {
+        RAMP_MOTORS = false,
+        RAMP_SERVOS = true,
+    };
+    enum RampMode rampMode;
 };
 #endif // MAINWINDOW_H

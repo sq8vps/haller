@@ -1,11 +1,13 @@
 #include "proto.h"
 
 #include "motor.h"
+#include "servo.h"
 #include <string.h>
 #include "CommunicationCodes.h"
 
 void proto_dummy_handler(uint8_t id, uint8_t *buf, uint8_t len);
 void proto_motor_wrapper(uint8_t id, uint8_t *buf, uint8_t len);
+void proto_servo_wrapper(uint8_t id, uint8_t *buf, uint8_t len);
 
 #define PROTO_PAYLOAD_WORD_LENGTH 2
 #define PROTO_PAYLOAD_MAX_LENGTH (256 / PROTO_PAYLOAD_WORD_LENGTH)
@@ -16,13 +18,14 @@ struct proto_module
 	void (*callback)(uint8_t, uint8_t*, uint8_t);
 };
 
-#define MODULES_COUNT 2
+#define MODULES_COUNT 3
 
 struct proto_module proto_module_list[MODULES_COUNT] = {
 		{255, &proto_dummy_handler},
 
 
 		{NORESPREQ_SET_THRUSTERS, &proto_motor_wrapper},
+		{NORESPREQ_SET_SERVOS, &proto_servo_wrapper},
 };
 
 
@@ -72,4 +75,9 @@ void proto_motor_wrapper(uint8_t id, uint8_t *buf, uint8_t len)
 	uint16_t torque[MOTOR_COUNT];
 	memcpy(torque, buf, 2 * MOTOR_COUNT);
 	Motor_sendData(torque);
+}
+
+void proto_servo_wrapper(uint8_t id, uint8_t *buf, uint8_t len)
+{
+	Servo_set(buf[0], buf[2]);
 }

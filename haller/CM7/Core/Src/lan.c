@@ -39,6 +39,7 @@ static void lan_udpReceived(void *arg, struct udp_pcb *pcb, struct pbuf *p, cons
 {
 	if(rxCallback != NULL)
 		rxCallback((uint8_t*)p->payload, &(p->len));
+	pbuf_free(p);
 }
 
 static err_t lan_tcpConnected(void *arg, struct tcp_pcb *tpcb, err_t err)
@@ -170,7 +171,7 @@ void Lan_init(void (*rxCallbackFun)(uint8_t*, uint16_t*))
 	MX_LWIP_HandleTimeouts(); //may be needed for network interface initialization
 
 	lan_udpInit(); //initialize UDP
-	lan_tcpInit(); //initialize TCP
+	//lan_tcpInit(); //initialize TCP
 }
 
 void Lan_refresh(void)
