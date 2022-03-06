@@ -164,8 +164,9 @@ Error_Handler();
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	Lan_refresh();
+	//Lan_refresh();
 	HAL_IWDG_Refresh(&hiwdg1);
+	MX_LWIP_Process();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
