@@ -24,7 +24,7 @@ MainWindow::~MainWindow(){
 
 void MainWindow::timerTick()
 {
-    if(rampMode == RAMP_MOTORS)
+    if(rampMode == RAMP_MOTORS || rampMode == RAMP_BOTH)
     {
         QVarLengthArray<quint8> bytes;
             bytes.clear();
@@ -53,19 +53,24 @@ void MainWindow::timerTick()
             tcpUdp.udp_send(motor_control_message);
             //socket->write(motor_control_message,motor_control_message.size());
     }
-    else
+
+    if(rampMode == RAMP_SERVOS || rampMode == RAMP_BOTH)
     {
         QVarLengthArray<quint8> bytes;
-        bytes.clear();
 
+
+        static float arg = 0.f;
+        arg += 3.14f / 20.f;
+        if(arg > 6.28f)
+            arg = 0.f;
+
+        for(quint8 j = 0; j < 6; j++)
+        {
+            bytes.clear();
             bytes.append(NORESPREQ_SET_SERVOS);
             bytes.append(2); // payload size
-            bytes.append(4);
+            bytes.append(j);
             bytes.append(0);
-            static float arg = 0.f;
-            arg += 3.14f / 20.f;
-            if(arg > 6.28f)
-                arg = 0.f;
             bytes.append(static_cast<quint8>((sinf(arg) + 1.f) * 50.f));
             bytes.append(0);
             // convet to QByteArray
@@ -77,6 +82,7 @@ void MainWindow::timerTick()
             }
            // tcpUdp.tcp_send(motor_control_message);
             tcpUdp.udp_send(motor_control_message);
+        }
     }
 }
 
@@ -214,7 +220,7 @@ void MainWindow::on_close_clicked()
 
 void MainWindow::sendServo(int no, int val)
 {
-    this->addToLogs("Setting servo");
+    this->addToLogs("Setting servo to " + QString::number(val));
     QVarLengthArray<quint8> bytes;
     bytes.clear();
 
@@ -282,4 +288,26 @@ void MainWindow::on_pushButton_clicked()
 void MainWindow::on_pushButton_3_clicked()
 {
     timer->stop();
+}
+
+void MainWindow::on_pushButton_4_clicked()
+{
+    ui->horizontalSlider->setValue(50);
+    ui->horizontalSlider_2->setValue(50);
+    ui->horizontalSlider_3->setValue(50);
+    ui->horizontalSlider_4->setValue(50);
+    ui->horizontalSlider_5->setValue(50);
+    ui->horizontalSlider_6->setValue(50);
+    sendServo(0, 50);
+    sendServo(1, 50);
+    sendServo(2, 50);
+    sendServo(3, 50);
+    sendServo(4, 50);
+    sendServo(5, 50);
+}
+
+void MainWindow::on_pushButton_5_clicked()
+{
+    timer->start(ui->lineEdit->text().toInt());
+    rampMode = RAMP_BOTH;
 }

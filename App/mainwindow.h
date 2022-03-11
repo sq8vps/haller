@@ -52,6 +52,10 @@ private slots:
 
     void on_pushButton_3_clicked();
 
+    void on_pushButton_4_clicked();
+
+    void on_pushButton_5_clicked();
+
 private:
     void addToLogs(QString message);
     Ui::MainWindow *ui;
@@ -60,8 +64,9 @@ private:
     QTimer *timer;
     enum RampMode
     {
-        RAMP_MOTORS = false,
-        RAMP_SERVOS = true,
+        RAMP_MOTORS,
+        RAMP_SERVOS,
+        RAMP_BOTH
     };
     enum RampMode rampMode;
 };
