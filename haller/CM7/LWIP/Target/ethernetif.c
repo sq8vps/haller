@@ -6,7 +6,7 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
+  * <h2><center>&copy; Copyright (c) 2022 STMicroelectronics.
   * All rights reserved.</center></h2>
   *
   * This software component is licensed by ST under Ultimate Liberty license
@@ -423,7 +423,7 @@ static struct pbuf * low_level_input(struct netif *netif)
 
 #if !defined(DUAL_CORE) || defined(CORE_CM7)
     /* Invalidate data cache for ETH Rx Buffers */
-    //SCB_InvalidateDCache_by_Addr((uint32_t *)RxBuff->buffer, framelength);
+    SCB_InvalidateDCache_by_Addr((uint32_t *)RxBuff->buffer, framelength);
 #endif
 
     custom_pbuf  = (struct pbuf_custom*)LWIP_MEMPOOL_ALLOC(RX_POOL);
@@ -669,7 +669,7 @@ void ethernet_link_check_state(struct netif *netif)
 
   if(netif_is_link_up(netif) && (PHYLinkState <= LAN8742_STATUS_LINK_DOWN))
   {
-    HAL_ETH_Stop_IT(&heth);
+    HAL_ETH_Stop(&heth);
     netif_set_down(netif);
     netif_set_link_down(netif);
   }
@@ -709,7 +709,7 @@ void ethernet_link_check_state(struct netif *netif)
       MACConf.Speed = speed;
       HAL_ETH_SetMACConfig(&heth, &MACConf);
 
-      HAL_ETH_Start_IT(&heth);
+      HAL_ETH_Start(&heth);
       netif_set_up(netif);
       netif_set_link_up(netif);
     }

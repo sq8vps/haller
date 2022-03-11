@@ -3,14 +3,14 @@
 
 #include <stdint.h>
 
-#define UDP_PORT_LOCAL 25562
-#define UDP_PORT_REMOTE 25563
+#define UDP_PORT_LOCAL 25565
+#define UDP_PORT_REMOTE 25565
 #define TCP_PORT_LOCAL 25564
-#define TCP_PORT_REMOTE 25565
-#define REMOTE_IP_1 10
-#define REMOTE_IP_2 69
-#define REMOTE_IP_3 69
-#define REMOTE_IP_4 70
+#define TCP_PORT_REMOTE 25564
+#define REMOTE_IP_1 192
+#define REMOTE_IP_2 168
+#define REMOTE_IP_3 194
+#define REMOTE_IP_4 90
 
 typedef enum
 {

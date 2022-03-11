@@ -61,6 +61,7 @@ void HAL_ETH_RxCpltCallback(ETH_HandleTypeDef *heth)
 
 /* External variables --------------------------------------------------------*/
 extern ETH_HandleTypeDef heth;
+extern I2C_HandleTypeDef hi2c1;
 /* USER CODE BEGIN EV */
 
 /* USER CODE END EV */
@@ -204,16 +205,57 @@ void SysTick_Handler(void)
 /******************************************************************************/
 
 /**
+  * @brief This function handles I2C1 event interrupt.
+  */
+void I2C1_EV_IRQHandler(void)
+{
+  /* USER CODE BEGIN I2C1_EV_IRQn 0 */
+
+  /* USER CODE END I2C1_EV_IRQn 0 */
+  HAL_I2C_EV_IRQHandler(&hi2c1);
+  /* USER CODE BEGIN I2C1_EV_IRQn 1 */
+
+  /* USER CODE END I2C1_EV_IRQn 1 */
+}
+
+/**
+  * @brief This function handles I2C1 error interrupt.
+  */
+void I2C1_ER_IRQHandler(void)
+{
+  /* USER CODE BEGIN I2C1_ER_IRQn 0 */
+
+  /* USER CODE END I2C1_ER_IRQn 0 */
+  HAL_I2C_ER_IRQHandler(&hi2c1);
+  /* USER CODE BEGIN I2C1_ER_IRQn 1 */
+
+  /* USER CODE END I2C1_ER_IRQn 1 */
+}
+
+/**
   * @brief This function handles Ethernet global interrupt.
   */
 void ETH_IRQHandler(void)
 {
   /* USER CODE BEGIN ETH_IRQn 0 */
 
+	uint8_t state = 1;
+
+
+ while(state)
+ {
   /* USER CODE END ETH_IRQn 0 */
   HAL_ETH_IRQHandler(&heth);
   /* USER CODE BEGIN ETH_IRQn 1 */
 
+	state = (__HAL_ETH_DMA_GET_IT(&heth, ETH_DMACSR_RI) > 0) & (__HAL_ETH_DMA_GET_IT_SOURCE(&heth, ETH_DMACIER_RIE) > 0);
+	state |= (__HAL_ETH_DMA_GET_IT(&heth, ETH_DMACSR_TI) > 0) & (__HAL_ETH_DMA_GET_IT_SOURCE(&heth, ETH_DMACIER_TIE) > 0);
+	state |= (__HAL_ETH_DMA_GET_IT(&heth, ETH_DMACSR_AIS) > 0) & (__HAL_ETH_DMA_GET_IT_SOURCE(&heth, ETH_DMACIER_AIE) > 0);
+	state |= (__HAL_ETH_MAC_GET_IT(&heth, (ETH_MACIER_RXSTSIE | ETH_MACIER_TXSTSIE)) > 0);
+	state |= (__HAL_ETH_MAC_GET_IT(&heth, ETH_MAC_PMT_IT) > 0);
+	state |= (__HAL_ETH_MAC_GET_IT(&heth, ETH_MAC_LPI_IT) > 0);
+	state |= (HAL_GetCurrentCPUID() == CM7_CPUID) & (__HAL_ETH_WAKEUP_EXTI_GET_FLAG(ETH_WAKEUP_EXTI_LINE) != (uint32_t)RESET);
+ }
   /* USER CODE END ETH_IRQn 1 */
 }
 

@@ -1,7 +1,8 @@
 #include "mainwindow.h"
-#include "TcpClient.h"
+#include "TcpUdp.h"
 #include "ui_mainwindow.h"
-#include <modules.h>
+#include <../auvConfig/CommunicationCodes.h>
+#include <math.h>
 
 
 MainWindow::MainWindow(QWidget *parent):
@@ -9,63 +10,119 @@ QMainWindow(parent),
 ui(new Ui::MainWindow) {
 
   ui->setupUi(this);
-
+  connect(&tcpUdp, SIGNAL(onClientConnected()), this, SLOT(onClientConnected()));
+  connect(&tcpUdp, SIGNAL(onClientDisconnected()), this, SLOT(onClientDisconnected()));
+  connect(&tcpUdp, SIGNAL(onReceived(QByteArray)), this, SLOT(onReceived(QByteArray)));
+  timer = new QTimer(this);
+  connect(timer, &QTimer::timeout, this, &MainWindow::timerTick);
+  rampMode = RAMP_MOTORS;
 }
 
 MainWindow::~MainWindow(){
     delete ui;
 }
 
+void MainWindow::timerTick()
+{
+    if(rampMode == RAMP_MOTORS || rampMode == RAMP_BOTH)
+    {
+        QVarLengthArray<quint8> bytes;
+            bytes.clear();
+
+            static float arg = 0.f;
+            arg += 3.14f / 20.f;
+            if(arg > 6.28f)
+                arg = 0.f;
+
+            // construct motor control mesage
+            bytes.append(NORESPREQ_SET_THRUSTERS); // steval id
+            bytes.append(5); // payload size
+            quint16 value = static_cast<quint16>((sinf(arg) + 1.f) * 1000.f);
+            for(int i=0;i<5;i++){
+
+                bytes.append(value & 0xFF);
+                bytes.append((value & 0xFF00) >> 8);
+            }
+
+            // convet to QByteArray
+            QByteArray motor_control_message;
+                motor_control_message.clear();
+            for (int i =0; i < bytes.length();i++){
+                motor_control_message.append(static_cast<char>(bytes[i]));
+            }
+            tcpUdp.udp_send(motor_control_message);
+            //socket->write(motor_control_message,motor_control_message.size());
+    }
+
+    if(rampMode == RAMP_SERVOS || rampMode == RAMP_BOTH)
+    {
+        QVarLengthArray<quint8> bytes;
+
+
+        static float arg = 0.f;
+        arg += 3.14f / 20.f;
+        if(arg > 6.28f)
+            arg = 0.f;
+
+        for(quint8 j = 0; j < 6; j++)
+        {
+            bytes.clear();
+            bytes.append(NORESPREQ_SET_SERVOS);
+            bytes.append(2); // payload size
+            bytes.append(j);
+            bytes.append(0);
+            bytes.append(static_cast<quint8>((sinf(arg) + 1.f) * 50.f));
+            bytes.append(0);
+            // convet to QByteArray
+            QByteArray motor_control_message;
+            motor_control_message.clear();
+            for (int i =0; i < bytes.length(); i++)
+            {
+                motor_control_message.append(static_cast<char>(bytes[i]));
+            }
+           // tcpUdp.tcp_send(motor_control_message);
+            tcpUdp.udp_send(motor_control_message);
+        }
+    }
+}
 
 void MainWindow::addToLogs(QString message){
     ui->textEdit->append(message);
 }
 
-void MainWindow::TcpNewConnectionLogs(){
-    this->addToLogs("Connected!");
+void MainWindow::onClientConnected()
+{
+    this->addToLogs("Client connected");
 }
 
-void MainWindow::TcpNewDisconnectionLogs(){
-    this->addToLogs("Disconnected!");
+void MainWindow::onClientDisconnected()
+{
+    this->addToLogs("Client disconnected");
 }
 
-void MainWindow::TcpNewTcpReceiveLogs(){
-   // QString log;
-    QByteArray received_data = rov_tcp_client.TcpClientConnect_GetAllReceivedData();
-//    QString received_data_log = "Data received: " + received_data.toStdString();
-//    this->addToLogs(received_data_log);
+void MainWindow::onReceived(QByteArray data)
+{
+    this->addToLogs("Data received: " + QString(data));
+    int module_id = static_cast<int>(data[0]);
 
-    int module_id = static_cast<int>(received_data[0]);
+    switch (module_id)
+    {
 
-    switch (module_id){
     }
 }
 
-void MainWindow::processPendingDatagrams(){
-    QHostAddress sender;
-    uint16_t port;
-    while (socket->hasPendingDatagrams()){
-        QByteArray datagram;
-        datagram.resize(socket->pendingDatagramSize());
-        socket->readDatagram(datagram.data(),datagram.size(),&sender,&port);
-        addToLogs("Message From :: " + sender.toString());
-        addToLogs("Port From :: " + PORT);
-        addToLogs("Message :: " + datagram);
-    }
-}
 
 void MainWindow::on_Connect_clicked(){
-    connect(rov_tcp_client.TcpClientConnect_GetSocket(), SIGNAL(connected()), this, SLOT(TcpNewConnectionLogs()));
-    connect(rov_tcp_client.TcpClientConnect_GetSocket(), SIGNAL(disconnected()), this, SLOT(TcpNewDisconnectionLogs()));
-    connect(rov_tcp_client.TcpClientConnect_GetSocket(), SIGNAL(readyRead()), this, SLOT(TcpNewTcpReceiveLogs()));
-    this->addToLogs("Connecting by Tcp...");
-    rov_tcp_client.TcpClient_Connect();
+    this->addToLogs("Starting TCP server...");
+    this->addToLogs(tcpUdp.tcp_listen());
 }
 
 
 void MainWindow::on_Disconnect_clicked(){
-    this->addToLogs("Closing...");
-    rov_tcp_client.TcpClient_Disconnect();
+    this->addToLogs("Stopping TCP server... ");
+    tcpUdp.tcp_close();
+    this->addToLogs("OK");
+
 }
 
 
@@ -74,21 +131,18 @@ void MainWindow::on_clear_clicked(){
 }
 
 
-void MainWindow::on_ConnectUdp_clicked(){
-    socket = new QUdpSocket(this);
-    bool result =  socket->bind(QHostAddress(ADDRESS), PORT);
-    if(!result){
-        addToLogs("FAIL");
-    }
-    processPendingDatagrams();
-    connect(socket, SIGNAL(readyRead()), this, SLOT(processPendingDatagrams()),Qt::QueuedConnection);
-    this->addToLogs("Connecting by Udp...");
+void MainWindow::on_ConnectUdp_clicked()
+{
+    this->addToLogs("Opening UDP socket...");
+    this->addToLogs(tcpUdp.udp_open());
 }
 
 
-void MainWindow::on_DisconnectUdp_clicked(){
-    socket->close();
-    this->addToLogs("Disconnected!");
+void MainWindow::on_DisconnectUdp_clicked()
+{
+    this->addToLogs("Closing UDP socket... ");
+    tcpUdp.udp_close();
+    this->addToLogs("OK");
 }
 
 
@@ -114,11 +168,12 @@ void MainWindow::on_CommitMotors_clicked(){
         }
     if(pom==0){
         // construct motor control mesage
-        bytes.append(MODULE_STEVAL); // steval id
-        bytes.append(10); // payload size
+        bytes.append(NORESPREQ_SET_THRUSTERS); // steval id
+        bytes.append(5); // payload size
         for(int i=0;i<5;i++){
-        quint16 value = static_cast<quint16>(motor_torque[i]);
-        bytes.append(value);
+            quint16 value = static_cast<quint16>(motor_torque[i]);
+            bytes.append(value & 0xFF);
+            bytes.append((value & 0xFF00) >> 8);
         }
 
         // convet to QByteArray
@@ -127,7 +182,7 @@ void MainWindow::on_CommitMotors_clicked(){
         for (int i =0; i < bytes.length();i++){
             motor_control_message.append(static_cast<char>(bytes[i]));
         }
-        socket->writeDatagram(motor_control_message,QHostAddress(ADDRESS),PORT);
+        tcpUdp.udp_send(motor_control_message);
         //socket->write(motor_control_message,motor_control_message.size());
     }
 }
@@ -140,11 +195,13 @@ void MainWindow::on_stopMotors_clicked()
     bytes.clear();
 
     // construct motor control mesage
-        bytes.append(MODULE_STEVAL); // motor module M4 handler id
-        bytes.append(10); // payload size
-        for (int i=0;i<10;i++)
-            bytes.append(0); //unused, but payload size must be equal to 10
-
+        bytes.append(NORESPREQ_SET_THRUSTERS);
+        bytes.append(5); // payload size
+        for (int i=0;i<5;i++)
+        {
+            bytes.append(0xe8);
+            bytes.append(0x03);
+        }
         // convet to QByteArray
         QByteArray motor_control_message;
         motor_control_message.clear();
@@ -152,7 +209,8 @@ void MainWindow::on_stopMotors_clicked()
         {
             motor_control_message.append(static_cast<char>(bytes[i]));
         }
-
+       // tcpUdp.tcp_send(motor_control_message);
+        tcpUdp.udp_send(motor_control_message);
 }
 
 void MainWindow::on_close_clicked()
@@ -160,3 +218,96 @@ void MainWindow::on_close_clicked()
     close();
 }
 
+void MainWindow::sendServo(int no, int val)
+{
+    this->addToLogs("Setting servo to " + QString::number(val));
+    QVarLengthArray<quint8> bytes;
+    bytes.clear();
+
+    // construct motor control mesage
+        bytes.append(NORESPREQ_SET_SERVOS);
+        bytes.append(2); // payload size
+        bytes.append(static_cast<quint8>(no));
+        bytes.append(0);
+        bytes.append(static_cast<quint8>(val));
+        bytes.append(0);
+        // convet to QByteArray
+        QByteArray motor_control_message;
+        motor_control_message.clear();
+        for (int i =0; i < bytes.length(); i++)
+        {
+            motor_control_message.append(static_cast<char>(bytes[i]));
+        }
+       // tcpUdp.tcp_send(motor_control_message);
+        tcpUdp.udp_send(motor_control_message);
+}
+
+
+void MainWindow::on_horizontalSlider_valueChanged(int value)
+{
+    sendServo(0, value);
+}
+
+void MainWindow::on_horizontalSlider_2_valueChanged(int value)
+{
+    sendServo(1, value);
+}
+
+void MainWindow::on_horizontalSlider_3_valueChanged(int value)
+{
+    sendServo(2, value);
+}
+
+void MainWindow::on_horizontalSlider_4_valueChanged(int value)
+{
+    sendServo(3, value);
+}
+
+void MainWindow::on_horizontalSlider_5_valueChanged(int value)
+{
+    sendServo(4, value);
+}
+
+void MainWindow::on_horizontalSlider_6_valueChanged(int value)
+{
+    sendServo(5, value);
+}
+
+void MainWindow::on_pushButton_2_clicked()
+{
+    timer->start(ui->lineEdit->text().toInt());
+    rampMode = RAMP_SERVOS;
+}
+
+void MainWindow::on_pushButton_clicked()
+{
+    timer->start(ui->lineEdit->text().toInt());
+    rampMode = RAMP_MOTORS;
+}
+
+void MainWindow::on_pushButton_3_clicked()
+{
+    timer->stop();
+}
+
+void MainWindow::on_pushButton_4_clicked()
+{
+    ui->horizontalSlider->setValue(50);
+    ui->horizontalSlider_2->setValue(50);
+    ui->horizontalSlider_3->setValue(50);
+    ui->horizontalSlider_4->setValue(50);
+    ui->horizontalSlider_5->setValue(50);
+    ui->horizontalSlider_6->setValue(50);
+    sendServo(0, 50);
+    sendServo(1, 50);
+    sendServo(2, 50);
+    sendServo(3, 50);
+    sendServo(4, 50);
+    sendServo(5, 50);
+}
+
+void MainWindow::on_pushButton_5_clicked()
+{
+    timer->start(ui->lineEdit->text().toInt());
+    rampMode = RAMP_BOTH;
+}

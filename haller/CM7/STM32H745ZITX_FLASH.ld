@@ -39,8 +39,8 @@ ENTRY(Reset_Handler)
 /* Highest address of the user mode stack */
 _estack = ORIGIN(RAM) + LENGTH(RAM); /* end of "RAM" Ram type memory */
 
-_Min_Heap_Size = 0x400 ; /* required amount of heap  */
-_Min_Stack_Size = 0x800 ; /* required amount of stack */
+_Min_Heap_Size = 0x800 ; /* required amount of heap  */
+_Min_Stack_Size = 0xf00 ; /* required amount of stack */
 
 /* Memories definition */
 MEMORY
@@ -176,6 +176,18 @@ SECTIONS
     . = . + _Min_Stack_Size;
     . = ALIGN(8);
   } >RAM
+    /* Modification start */
+  .lwip_sec (NOLOAD) : {
+    . = ABSOLUTE(0x30040000);
+    *(.RxDecripSection) 
+    
+    . = ABSOLUTE(0x30040060);
+    *(.TxDecripSection)
+    
+    . = ABSOLUTE(0x30040200);
+    *(.RxArraySection) 
+  } >RAM_D2
+  /* Modification end */
 
   /* Remove information from the compiler libraries */
   /DISCARD/ :

@@ -1,6 +1,7 @@
 #include "motor.h"
 
 #include "stm32h7xx.h"
+#include <string.h>
 
 
 
