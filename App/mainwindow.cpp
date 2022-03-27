@@ -311,3 +311,46 @@ void MainWindow::on_pushButton_5_clicked()
     timer->start(ui->lineEdit->text().toInt());
     rampMode = RAMP_BOTH;
 }
+
+void MainWindow::on_pushButton_6_clicked()
+{
+    QVarLengthArray<quint8> bytes;
+    bytes.clear();
+    // construct motor control mesage
+        bytes.append(NORESPREQ_SET_SERVOS);
+    // convet to QByteArray
+    QByteArray motor_control_message;
+    motor_control_message.clear();
+    for (int i =0; i < bytes.length(); i++)
+    {
+        motor_control_message.append(static_cast<char>(bytes[i]));
+    }
+   // tcpUdp.tcp_send(motor_control_message);
+    tcpUdp.udp_send(motor_control_message);
+}
+
+
+void MainWindow::on_pushButton_7_clicked()
+{
+    this->addToLogs("Setting pressure");
+    QVarLengthArray<quint8> bytes;
+    bytes.clear();
+    int val=ui->lineEdit_2->text().toInt();
+
+    // construct motor control mesage
+        bytes.append(NORESPREQ_SET_SERVOS);
+        bytes.append(1); // payload size
+        bytes.append(static_cast<quint16>(val));
+        bytes.append(0);
+        // convet to QByteArray
+        QByteArray motor_control_message;
+        motor_control_message.clear();
+        for (int i =0; i < bytes.length(); i++)
+        {
+            motor_control_message.append(static_cast<char>(bytes[i]));
+        }
+       // tcpUdp.tcp_send(motor_control_message);
+        tcpUdp.udp_send(motor_control_message);
+
+}
+
