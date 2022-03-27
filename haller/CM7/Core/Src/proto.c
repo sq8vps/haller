@@ -18,12 +18,12 @@ struct proto_module
 	void (*callback)(uint8_t, uint8_t*, uint8_t);
 };
 
-#define MODULES_COUNT 3
+#define MODULES_COUNT 4
 
 struct proto_module proto_module_list[MODULES_COUNT] = {
 		{255, &proto_dummy_handler},
 
-
+		{NORESPREQ_SET_AZIMUTHAL_SERVOS, &proto_servo_wrapper},
 		{NORESPREQ_SET_THRUSTERS, &proto_motor_wrapper},
 		{NORESPREQ_SET_SERVOS, &proto_servo_wrapper},
 };
@@ -79,5 +79,11 @@ void proto_motor_wrapper(uint8_t id, uint8_t *buf, uint8_t len)
 
 void proto_servo_wrapper(uint8_t id, uint8_t *buf, uint8_t len)
 {
-	Servo_set(buf[0], buf[2]);
+	if(id == NORESPREQ_SET_SERVOS)
+		Servo_set(buf[0], buf[2]);
+	else if(id == NORESPREQ_SET_AZIMUTHAL_SERVOS)
+	{
+		Servo_set(0, buf[0]);
+		Servo_set(1, buf[2]);
+	}
 }
