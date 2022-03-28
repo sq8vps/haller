@@ -2,8 +2,9 @@
 
 #include "motor.h"
 #include "servo.h"
+#include "pressure.h"
 #include <string.h>
-#include "CommunicationCodes.h"
+#include "lan.h"
 
 void proto_dummy_handler(uint8_t id, uint8_t *buf, uint8_t len);
 void proto_motor_wrapper(uint8_t id, uint8_t *buf, uint8_t len);
@@ -18,16 +19,30 @@ struct proto_module
 	void (*callback)(uint8_t, uint8_t*, uint8_t);
 };
 
-#define MODULES_COUNT 3
+#define MODULES_COUNT 4
 
 struct proto_module proto_module_list[MODULES_COUNT] = {
 		{255, &proto_dummy_handler},
 
-
+		{NORESPREQ_SET_AZIMUTHAL_SERVOS, &proto_servo_wrapper},
 		{NORESPREQ_SET_THRUSTERS, &proto_motor_wrapper},
 		{NORESPREQ_SET_SERVOS, &proto_servo_wrapper},
 };
 
+void Proto_send(enum Command id, uint8_t *data, uint16_t len)
+{
+	if(len > (PROTO_PAYLOAD_MAX_LENGTH))
+		return;
+
+	uint8_t buf[PROTO_PAYLOAD_MAX_LENGTH * 2 + 2];
+	buf[0] = (uint8_t)id;
+	buf[1] = len;
+	for(uint16_t i = 0; i < (len * 2); i++)
+	{
+		buf[2 + i] = data[i];
+	}
+	Lan_sendUdp(buf, len * 2 + 2);
+}
 
 void Proto_parse(uint8_t *buf, uint16_t *len)
 {
@@ -79,5 +94,23 @@ void proto_motor_wrapper(uint8_t id, uint8_t *buf, uint8_t len)
 
 void proto_servo_wrapper(uint8_t id, uint8_t *buf, uint8_t len)
 {
-	Servo_set(buf[0], buf[2]);
+	if(id == NORESPREQ_SET_SERVOS)
+		Servo_set(buf[0], buf[2]);
+	else if(id == NORESPREQ_SET_AZIMUTHAL_SERVOS)
+	{
+		Servo_set(0, buf[0]);
+		Servo_set(1, buf[2]);
+	}
+}
+
+void proto_pressure_wrapper(uint8_t id, uint8_t *buf, uint8_t len)
+{
+//	if(id == RESPREQ_GET_PRESSURE)
+//	{
+//		Pressure_getAndSend();
+//	}
+//	else if(id == NORESPREQ_SET_PRESSURE_INTERVAL)
+//	{
+//		Pressure_setInterval((uint16_t)buf[0] | (uint16_t)(buf[1] << 8));
+//	}
 }
