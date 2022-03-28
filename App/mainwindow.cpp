@@ -335,7 +335,7 @@ void MainWindow::on_pushButton_7_clicked()
     this->addToLogs("Setting pressure");
     QVarLengthArray<quint8> bytes;
     bytes.clear();
-    int val=ui->lineEdit_2->text().toInt();
+    int val=ui->lineEdit_3->text().toInt();
 
     // construct motor control mesage
         bytes.append(NORESPREQ_SET_SERVOS);
