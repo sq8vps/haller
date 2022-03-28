@@ -107,7 +107,17 @@ void MainWindow::onReceived(QByteArray data)
 
     switch (module_id)
     {
+       /* case 'pressure':
+        QVarLengthArray<quint8> bytes;
+        bytes.clear();
 
+        // construct motor control mesage
+            bytes.append(NORESPREQ_SET_SERVOS);
+            bytes.append(2); // payload size
+            bytes.append(static_cast<quint32>(no));
+            bytes.append(0);
+        break;
+        */
     }
 }
 
@@ -327,6 +337,7 @@ void MainWindow::on_pushButton_6_clicked()
     }
    // tcpUdp.tcp_send(motor_control_message);
     tcpUdp.udp_send(motor_control_message);
+    tcpUdp.
 }
 
 

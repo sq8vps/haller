@@ -574,7 +574,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Set pressure</string>
+     <string>Set interval</string>
     </property>
    </widget>
    <widget class="QLineEdit" name="lineEdit_3">
