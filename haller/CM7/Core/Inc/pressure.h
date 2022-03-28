@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+#define PRESSURE_DEFAULT_INTERVAL 500 //default interval in ms
+
 /**
  * @brief Get and send pressure data
  */

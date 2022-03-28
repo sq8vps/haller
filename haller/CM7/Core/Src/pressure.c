@@ -34,6 +34,8 @@ void Pressure_init(void)
 
 	if(MS5837_Init(&hi2c2) == INIT_MS5837_02BA_FAIL)
 		NVIC_SystemReset();
+
+	Pressure_setInterval(PRESSURE_DEFAULT_INTERVAL);
 }
 
 void Pressure_refresh(void)
