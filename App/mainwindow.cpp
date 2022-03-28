@@ -112,10 +112,10 @@ void MainWindow::onReceived(QByteArray data)
         bytes.clear();
 
         // construct motor control mesage
-            bytes.append(NORESPREQ_SET_SERVOS);
-            bytes.append(2); // payload size
-            bytes.append(static_cast<quint32>(no));
-            bytes.append(0);
+            bytes.append(data[2]);
+            bytes.append(data[3]); // payload size
+            bytes.append(static_cast<quint32>(data[4])/100);
+            bytes.append(data[5]);
         break;
         */
     }
