@@ -102,20 +102,22 @@ void MainWindow::onClientDisconnected()
 
 void MainWindow::onReceived(QByteArray data)
 {
-    this->addToLogs("Data received: " + QString(data));
+    //this->addToLogs("Data received: " + QString(data));
     int module_id = static_cast<int>(data[0]);
 
     switch (module_id)
     {
        /* case 'pressure':
-        QVarLengthArray<quint8> bytes;
-        bytes.clear();
-
-        // construct motor control mesage
-            bytes.append(data[2]);
-            bytes.append(data[3]); // payload size
-            bytes.append(static_cast<quint32>(data[4])/100);
-            bytes.append(data[5]);
+        quint32 val = 0;
+        val |= data[5];
+        val <<= 8;
+        val |= data[4];
+        val <<= 8;
+        val |= data[3];
+        val <<= 8;
+        val |= data[2];
+        val /= 100;
+        this->addToLogs("Pressure data: " + QString::number(val));
         break;
         */
     }
@@ -337,7 +339,6 @@ void MainWindow::on_pushButton_6_clicked()
     }
    // tcpUdp.tcp_send(motor_control_message);
     tcpUdp.udp_send(motor_control_message);
-    tcpUdp.
 }
 
 
@@ -351,17 +352,17 @@ void MainWindow::on_pushButton_7_clicked()
     // construct motor control mesage
         bytes.append(NORESPREQ_SET_SERVOS);
         bytes.append(1); // payload size
-        bytes.append(static_cast<quint16>(val));
-        bytes.append(0);
+        bytes.append(static_cast<quint8>(val & 0xFF));
+        bytes.append(static_cast<quint8>((val >> 8) & 0xFF));
         // convet to QByteArray
-        QByteArray motor_control_message;
-        motor_control_message.clear();
+        QByteArray data;
+        data.clear();
         for (int i =0; i < bytes.length(); i++)
         {
-            motor_control_message.append(static_cast<char>(bytes[i]));
+            data.append(static_cast<char>(bytes[i]));
         }
        // tcpUdp.tcp_send(motor_control_message);
-        tcpUdp.udp_send(motor_control_message);
+        tcpUdp.udp_send(data);
 
 }
 
