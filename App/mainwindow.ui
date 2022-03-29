@@ -606,7 +606,7 @@
      <string>Interval (ms):</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_8">
+   <widget class="QPushButton" name="openGripper">
     <property name="geometry">
      <rect>
       <x>420</x>
@@ -619,7 +619,7 @@
      <string>Open Gripper</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_9">
+   <widget class="QPushButton" name="closeGripper">
     <property name="geometry">
      <rect>
       <x>630</x>
