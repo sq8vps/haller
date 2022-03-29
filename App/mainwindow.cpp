@@ -107,19 +107,23 @@ void MainWindow::onReceived(QByteArray data)
 
     switch (module_id)
     {
-       /* case 'pressure':
-        quint32 val = 0;
-        val |= data[5];
-        val <<= 8;
-        val |= data[4];
-        val <<= 8;
-        val |= data[3];
-        val <<= 8;
-        val |= data[2];
-        val /= 100;
-        this->addToLogs("Pressure data: " + QString::number(val));
+        case RESP_PRESSURE_SENSOR_VALUE_ONCE:
+        case NORESPREQ_PRESSURE_SENSOR_VALUE_REGULAR_REPORT:
+        {
+            quint32 val = 0;
+            val |= data[5];
+            val <<= 8;
+            val |= data[4];
+            val <<= 8;
+            val |= data[3];
+            val <<= 8;
+            val |= data[2];
+            val /= 100;
+            this->addToLogs("Pressure data: " + QString::number(val));
+            break;
+        }
+        default:
         break;
-        */
     }
 }
 

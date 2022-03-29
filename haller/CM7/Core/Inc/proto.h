@@ -4,6 +4,15 @@
 #include <stdint.h>
 #include "CommunicationCodes.h"
 
+
+/**
+ * @brief Send packet
+ * @param id Response ID
+ * @param *data Packet body (payload)
+ * @param len Packet length
+ */
+void Proto_send(enum Command id, uint8_t *data, uint16_t len);
+
 /**
  * @brief Parse incoming packet and pass data to appropriate module handler
  * @param *buf Packet body

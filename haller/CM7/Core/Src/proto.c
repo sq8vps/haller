@@ -9,6 +9,7 @@
 void proto_dummy_handler(uint8_t id, uint8_t *buf, uint8_t len);
 void proto_motor_wrapper(uint8_t id, uint8_t *buf, uint8_t len);
 void proto_servo_wrapper(uint8_t id, uint8_t *buf, uint8_t len);
+void proto_pressure_wrapper(uint8_t id, uint8_t *buf, uint8_t len);
 
 #define PROTO_PAYLOAD_WORD_LENGTH 2
 #define PROTO_PAYLOAD_MAX_LENGTH (256 / PROTO_PAYLOAD_WORD_LENGTH)
@@ -19,11 +20,13 @@ struct proto_module
 	void (*callback)(uint8_t, uint8_t*, uint8_t);
 };
 
-#define MODULES_COUNT 4
+#define MODULES_COUNT 6
 
 struct proto_module proto_module_list[MODULES_COUNT] = {
 		{255, &proto_dummy_handler},
 
+		{RESPREQ_SET_RATE_OF_PRESSURE_SENSOR_REPORT, &proto_pressure_wrapper},
+		{RESPREQ_GET_PRESSURE_SENSOR_VALUE_ONCE, &proto_pressure_wrapper},
 		{NORESPREQ_SET_AZIMUTHAL_SERVOS, &proto_servo_wrapper},
 		{NORESPREQ_SET_THRUSTERS, &proto_motor_wrapper},
 		{NORESPREQ_SET_SERVOS, &proto_servo_wrapper},
@@ -105,12 +108,13 @@ void proto_servo_wrapper(uint8_t id, uint8_t *buf, uint8_t len)
 
 void proto_pressure_wrapper(uint8_t id, uint8_t *buf, uint8_t len)
 {
-//	if(id == RESPREQ_GET_PRESSURE)
-//	{
-//		Pressure_getAndSend();
-//	}
-//	else if(id == NORESPREQ_SET_PRESSURE_INTERVAL)
-//	{
-//		Pressure_setInterval((uint16_t)buf[0] | (uint16_t)(buf[1] << 8));
-//	}
+	if(id == RESPREQ_GET_PRESSURE_SENSOR_VALUE_ONCE)
+	{
+		Pressure_getAndSend();
+	}
+	else if(id == RESPREQ_SET_RATE_OF_PRESSURE_SENSOR_REPORT)
+	{
+		Pressure_setInterval((uint16_t)buf[0] | (uint16_t)(buf[1] << 8));
+		Proto_send(RESP_RATE_OF_PRESSURE_SENSOR_REPORT_SET, buf, len);
+	}
 }

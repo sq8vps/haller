@@ -16,7 +16,7 @@ void Pressure_getAndSend(void)
 	buf[1] = (t >> 8) & 0xFF;
 	buf[2] = (t >> 16) & 0xFF;
 	buf[3] = (t >> 24) & 0xFF;
-//	Proto_send(RESP_PRESSURE, buf, 2);
+	Proto_send(RESP_PRESSURE_SENSOR_VALUE_ONCE, buf, 2);
 }
 
 
