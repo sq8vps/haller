@@ -406,3 +406,9 @@ void MainWindow::on_openGripper_clicked()
         tcpUdp.udp_send(data);
 }
 
+
+void MainWindow::on_torpedo_left_clicked()
+{
+
+}
+

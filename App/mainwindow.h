@@ -64,6 +64,10 @@ private slots:
 
     void on_openGripper_clicked();
 
+    void on_pushButton_8_clicked();
+
+    void on_torpedo_left_clicked();
+
 private:
     void addToLogs(QString message);
     Ui::MainWindow *ui;
