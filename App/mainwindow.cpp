@@ -374,7 +374,7 @@ void MainWindow::on_closeGripper_clicked()
 
     // construct motor control mesage
         bytes.append(NORESPREQ_CLOSE_GRIPPER);
-        bytes.append(1); // payload size
+        bytes.append(0); // payload size
         // convet to QByteArray
         QByteArray data;
         data.clear();
@@ -394,7 +394,7 @@ void MainWindow::on_openGripper_clicked()
 
     // construct motor control mesage
         bytes.append(NORESPREQ_OPEN_GRIPPER);
-        bytes.append(1); // payload size
+        bytes.append(0); // payload size
         // convet to QByteArray
         QByteArray data;
         data.clear();
@@ -410,5 +410,42 @@ void MainWindow::on_openGripper_clicked()
 void MainWindow::on_torpedo_left_clicked()
 {
 
+    QVarLengthArray<quint16> bytes;
+    bytes.clear();
+
+    // construct motor control mesage
+        bytes.append(NORESPREQ_LAUNCH_TORPEDO);
+        bytes.append(1); // payload size
+        // convet to QByteArray
+        QByteArray data;
+        data.clear();
+        for (int i =0; i < bytes.length(); i++)
+        {
+            data.append(static_cast<char>(bytes[i]));
+        }
+       // tcpUdp.tcp_send(motor_control_message);
+        tcpUdp.udp_send(data);
+
+}
+
+
+void MainWindow::on_torpedo_right_clicked()
+{
+
+    QVarLengthArray<quint16> bytes;
+    bytes.clear();
+
+    // construct motor control mesage
+        bytes.append(NORESPREQ_LAUNCH_TORPEDO);
+        bytes.append(1); // payload size
+        // convet to QByteArray
+        QByteArray data;
+        data.clear();
+        for (int i =0; i < bytes.length(); i++)
+        {
+            data.append(static_cast<char>(bytes[i]));
+        }
+       // tcpUdp.tcp_send(motor_control_message);
+        tcpUdp.udp_send(data);
 }
 
