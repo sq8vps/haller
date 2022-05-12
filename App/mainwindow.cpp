@@ -369,7 +369,7 @@ void MainWindow::on_pushButton_7_clicked()
 
 void MainWindow::on_closeGripper_clicked()
 {
-    QVarLengthArray<quint8> bytes;
+    QVarLengthArray<quint16> bytes;
     bytes.clear();
 
     // construct motor control mesage
@@ -389,7 +389,7 @@ void MainWindow::on_closeGripper_clicked()
 
 void MainWindow::on_openGripper_clicked()
 {
-    QVarLengthArray<quint8> bytes;
+    QVarLengthArray<quint16> bytes;
     bytes.clear();
 
     // construct motor control mesage
@@ -416,6 +416,7 @@ void MainWindow::on_torpedo_left_clicked()
     // construct motor control mesage
         bytes.append(NORESPREQ_LAUNCH_TORPEDO);
         bytes.append(1); // payload size
+        bytes.append(static_cast<quint16>(1 & 0xFF));
         // convet to QByteArray
         QByteArray data;
         data.clear();
@@ -438,6 +439,7 @@ void MainWindow::on_torpedo_right_clicked()
     // construct motor control mesage
         bytes.append(NORESPREQ_LAUNCH_TORPEDO);
         bytes.append(1); // payload size
+        bytes.append(static_cast<quint16>(1 & 0xFF));
         // convet to QByteArray
         QByteArray data;
         data.clear();
