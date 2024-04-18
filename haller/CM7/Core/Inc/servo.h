@@ -3,7 +3,6 @@
 
 #include <stdint.h>
 
-void Servo_init(void);
-void Servo_set(uint8_t no, uint8_t val);
+void ServoInit(void);
 
 #endif /* INC_SERVO_H_ */

@@ -5,8 +5,7 @@
 
 #define UDP_PORT_LOCAL 25565
 #define UDP_PORT_REMOTE 25565
-#define TCP_PORT_LOCAL 25564
-#define TCP_PORT_REMOTE 25564
+
 #define REMOTE_IP_1 192
 #define REMOTE_IP_2 168
 #define REMOTE_IP_3 69
@@ -14,34 +13,13 @@
 
 typedef enum
 {
-	LAN_OK,
-	LAN_NOT_CONNECTED,
+	LAN_OK = 0,
 	LAN_LL_ERR,
 	LAN_PCB_NOT_INITIALIZED,
+} LanError;
 
-} Lan_err_t;
+LanError LanSendUdp(void *buf, uint16_t len);
 
-/**
- * @brief Send TCP packet
- * @param *buf Data to send
- * @param len Data length
- * @return LAN_OK or error code
- */
-Lan_err_t Lan_sendTcp(uint8_t *buf, uint16_t len);
-
-/**
- * @brief Send UDP packet
- * @param *buf Data to send
- * @param len Data length
- * @return LAN_OK or error code
- */
-Lan_err_t Lan_sendUdp(uint8_t *buf, uint16_t len);
-
-/**
- * @brief Initialize LAN module
- * @param *rxCallbackFun Callback function for received data
- */
-void Lan_init(void (*rxCallbackFun)(uint8_t*, uint16_t*));
-
+void LanInit(void (*rxCallback)(void *buf, uint16_t size));
 
 #endif /* INC_LAN_H_ */
