@@ -23,7 +23,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "lan.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -76,7 +76,10 @@ static void MX_I2C2_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+void parse(uint8_t *data, uint16_t *len)
+{
 
+}
 /* USER CODE END 0 */
 
 /**
@@ -153,7 +156,10 @@ Error_Handler();
   MX_IWDG1_Init();
   MX_I2C2_Init();
   /* USER CODE BEGIN 2 */
+  HAL_IWDG_Refresh(&hiwdg1);
+  MX_LWIP_Refresh();
 
+  Lan_init(&parse);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -162,7 +168,7 @@ Error_Handler();
   {
 	  HAL_IWDG_Refresh(&hiwdg1);
 	  MX_LWIP_Refresh();
-	  /* USER CODE END WHILE */
+    /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
   }

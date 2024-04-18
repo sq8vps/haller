@@ -121,7 +121,33 @@ lan8742_IOCtx_t  LAN8742_IOCtx = {ETH_PHY_IO_Init,
                                   ETH_PHY_IO_GetTick};
 
 /* USER CODE BEGIN 3 */
+static struct pbuf * low_level_input(struct netif *netif);
+//this is the modified function that must be used in interrupt-driver mode
+//this is left here so that when the code is generated from CubeMX, the function is replaced in it's original place
+//then a compilation error occurs due to multiple definitions
+//just leave this function and remove the original function
+//ATTENTION!!!!
+//also make sure that HAL_ETH_Start_IT(&heth) is used in line 735
+void ethernetif_input(struct netif *netif)
+{
+  err_t err;
+  struct pbuf *p;
 
+  /* move received packet into a new pbuf */
+  while(NULL != (p = low_level_input(netif)))
+  {
+	  /* entry point to the LwIP stack */
+	  err = netif->input(p, netif);
+
+	  if (err != ERR_OK)
+	  {
+		LWIP_DEBUGF(NETIF_DEBUG, ("ethernetif_input: IP input error\n"));
+		pbuf_free(p);
+		p = NULL;
+	  }
+  }
+
+}
 /* USER CODE END 3 */
 
 /* Private functions ---------------------------------------------------------*/
@@ -448,29 +474,26 @@ static struct pbuf * low_level_input(struct netif *netif)
  *
  * @param netif the lwip network interface structure for this ethernetif
  */
-void ethernetif_input(struct netif *netif)
-{
-  err_t err;
-  struct pbuf *p;
-
-  /* move received packet into a new pbuf */
-  while(NULL != (p = low_level_input(netif)))
-  {
-	  /* no packet could be read, silently ignore this */
-	  if (p == NULL) return;
-
-	  /* entry point to the LwIP stack */
-	  err = netif->input(p, netif);
-
-	  if (err != ERR_OK)
-	  {
-		LWIP_DEBUGF(NETIF_DEBUG, ("ethernetif_input: IP input error\n"));
-		pbuf_free(p);
-		p = NULL;
-	  }
-  }
-
-}
+//void ethernetif_input(struct netif *netif)
+//{
+//  err_t err;
+//  struct pbuf *p;
+//
+//  /* move received packet into a new pbuf */
+//  while(NULL != (p = low_level_input(netif)))
+//  {
+//	  /* entry point to the LwIP stack */
+//	  err = netif->input(p, netif);
+//
+//	  if (err != ERR_OK)
+//	  {
+//		LWIP_DEBUGF(NETIF_DEBUG, ("ethernetif_input: IP input error\n"));
+//		pbuf_free(p);
+//		p = NULL;
+//	  }
+//  }
+//
+//}
 
 #if !LWIP_ARP
 /**
