@@ -6,7 +6,7 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2022 STMicroelectronics.
+  * <h2><center>&copy; Copyright (c) 2024 STMicroelectronics.
   * All rights reserved.</center></h2>
   *
   * This software component is licensed by ST under Ultimate Liberty license
@@ -454,19 +454,20 @@ void ethernetif_input(struct netif *netif)
   struct pbuf *p;
 
   /* move received packet into a new pbuf */
-  p = low_level_input(netif);
-
-  /* no packet could be read, silently ignore this */
-  if (p == NULL) return;
-
-  /* entry point to the LwIP stack */
-  err = netif->input(p, netif);
-
-  if (err != ERR_OK)
+  while(NULL != (p = low_level_input(netif)))
   {
-    LWIP_DEBUGF(NETIF_DEBUG, ("ethernetif_input: IP input error\n"));
-    pbuf_free(p);
-    p = NULL;
+	  /* no packet could be read, silently ignore this */
+	  if (p == NULL) return;
+
+	  /* entry point to the LwIP stack */
+	  err = netif->input(p, netif);
+
+	  if (err != ERR_OK)
+	  {
+		LWIP_DEBUGF(NETIF_DEBUG, ("ethernetif_input: IP input error\n"));
+		pbuf_free(p);
+		p = NULL;
+	  }
   }
 
 }
@@ -709,7 +710,7 @@ void ethernet_link_check_state(struct netif *netif)
       MACConf.Speed = speed;
       HAL_ETH_SetMACConfig(&heth, &MACConf);
 
-      HAL_ETH_Start(&heth);
+      HAL_ETH_Start_IT(&heth);
       netif_set_up(netif);
       netif_set_link_up(netif);
     }

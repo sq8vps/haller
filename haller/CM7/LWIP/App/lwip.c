@@ -6,7 +6,7 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2022 STMicroelectronics.
+  * <h2><center>&copy; Copyright (c) 2024 STMicroelectronics.
   * All rights reserved.</center></h2>
   *
   * This software component is licensed by ST under Ultimate Liberty license
@@ -50,15 +50,15 @@ uint8_t NETMASK_ADDRESS[4];
 uint8_t GATEWAY_ADDRESS[4];
 
 /* USER CODE BEGIN 2 */
-void MX_LWIP_HandleTimeouts(void)
+void MX_LWIP_ProcessFromIsr(void)
 {
-	sys_check_timeouts();
-	Ethernet_Link_Periodic_Handle(&gnetif);
+  ethernetif_input(&gnetif);
 }
-void MX_LWIP_ProcessRx(void)
+void MX_LWIP_Refresh(void)
 {
-	ethernetif_input(&gnetif);
-	MX_LWIP_HandleTimeouts();
+	  sys_check_timeouts();
+
+	  Ethernet_Link_Periodic_Handle(&gnetif);
 }
 /* USER CODE END 2 */
 
@@ -160,7 +160,6 @@ static void Ethernet_Link_Periodic_Handle(struct netif *netif)
 void MX_LWIP_Process(void)
 {
 /* USER CODE BEGIN 4_1 */
-
 /* USER CODE END 4_1 */
   ethernetif_input(&gnetif);
 

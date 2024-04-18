@@ -6,7 +6,7 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
+  * <h2><center>&copy; Copyright (c) 2024 STMicroelectronics.
   * All rights reserved.</center></h2>
   *
   * This software component is licensed by ST under Ultimate Liberty license
@@ -55,7 +55,7 @@
 /* USER CODE BEGIN 0 */
 void HAL_ETH_RxCpltCallback(ETH_HandleTypeDef *heth)
 {
-	MX_LWIP_ProcessRx();
+	MX_LWIP_ProcessFromIsr();
 }
 /* USER CODE END 0 */
 
@@ -238,24 +238,22 @@ void I2C1_ER_IRQHandler(void)
 void ETH_IRQHandler(void)
 {
   /* USER CODE BEGIN ETH_IRQn 0 */
-
-	uint8_t state = 1;
-
-
- while(state)
- {
+//	uint8_t state = 1;
+//
+//
+// while(state)
+// {
   /* USER CODE END ETH_IRQn 0 */
   HAL_ETH_IRQHandler(&heth);
   /* USER CODE BEGIN ETH_IRQn 1 */
-
-	state = (__HAL_ETH_DMA_GET_IT(&heth, ETH_DMACSR_RI) > 0) & (__HAL_ETH_DMA_GET_IT_SOURCE(&heth, ETH_DMACIER_RIE) > 0);
-	state |= (__HAL_ETH_DMA_GET_IT(&heth, ETH_DMACSR_TI) > 0) & (__HAL_ETH_DMA_GET_IT_SOURCE(&heth, ETH_DMACIER_TIE) > 0);
-	state |= (__HAL_ETH_DMA_GET_IT(&heth, ETH_DMACSR_AIS) > 0) & (__HAL_ETH_DMA_GET_IT_SOURCE(&heth, ETH_DMACIER_AIE) > 0);
-	state |= (__HAL_ETH_MAC_GET_IT(&heth, (ETH_MACIER_RXSTSIE | ETH_MACIER_TXSTSIE)) > 0);
-	state |= (__HAL_ETH_MAC_GET_IT(&heth, ETH_MAC_PMT_IT) > 0);
-	state |= (__HAL_ETH_MAC_GET_IT(&heth, ETH_MAC_LPI_IT) > 0);
-	state |= (HAL_GetCurrentCPUID() == CM7_CPUID) & (__HAL_ETH_WAKEUP_EXTI_GET_FLAG(ETH_WAKEUP_EXTI_LINE) != (uint32_t)RESET);
- }
+//	state = (__HAL_ETH_DMA_GET_IT(&heth, ETH_DMACSR_RI) > 0) & (__HAL_ETH_DMA_GET_IT_SOURCE(&heth, ETH_DMACIER_RIE) > 0);
+//	state |= (__HAL_ETH_DMA_GET_IT(&heth, ETH_DMACSR_TI) > 0) & (__HAL_ETH_DMA_GET_IT_SOURCE(&heth, ETH_DMACIER_TIE) > 0);
+//	state |= (__HAL_ETH_DMA_GET_IT(&heth, ETH_DMACSR_AIS) > 0) & (__HAL_ETH_DMA_GET_IT_SOURCE(&heth, ETH_DMACIER_AIE) > 0);
+//	state |= (__HAL_ETH_MAC_GET_IT(&heth, (ETH_MACIER_RXSTSIE | ETH_MACIER_TXSTSIE)) > 0);
+//	state |= (__HAL_ETH_MAC_GET_IT(&heth, ETH_MAC_PMT_IT) > 0);
+//	state |= (__HAL_ETH_MAC_GET_IT(&heth, ETH_MAC_LPI_IT) > 0);
+//	state |= (HAL_GetCurrentCPUID() == CM7_CPUID) & (__HAL_ETH_WAKEUP_EXTI_GET_FLAG(ETH_WAKEUP_EXTI_LINE) != (uint32_t)RESET);
+//}
   /* USER CODE END ETH_IRQn 1 */
 }
 

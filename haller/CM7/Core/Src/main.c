@@ -6,7 +6,7 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
+  * <h2><center>&copy; Copyright (c) 2024 STMicroelectronics.
   * All rights reserved.</center></h2>
   *
   * This software component is licensed by ST under Ultimate Liberty license
@@ -23,13 +23,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "stm32h7xx_hal.h"
-#include <string.h>
-#include "lan.h"
-#include "proto.h"
-#include "motor.h"
-#include "servo.h"
-#include "pressure.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -110,11 +104,11 @@ int main(void)
 /* USER CODE BEGIN Boot_Mode_Sequence_1 */
   /* Wait until CPU2 boots and enters in stop mode or timeout*/
   timeout = 0xFFFF;
- // while((__HAL_RCC_GET_FLAG(RCC_FLAG_D2CKRDY) != RESET) && (timeout-- > 0));
-  if ( timeout < 0 )
-  {
-  Error_Handler();
-  }
+//  while((__HAL_RCC_GET_FLAG(RCC_FLAG_D2CKRDY) != RESET) && (timeout-- > 0));
+//  if ( timeout < 0 )
+//  {
+//  Error_Handler();
+//  }
 /* USER CODE END Boot_Mode_Sequence_1 */
   /* MCU Configuration--------------------------------------------------------*/
 
@@ -159,20 +153,16 @@ Error_Handler();
   MX_IWDG1_Init();
   MX_I2C2_Init();
   /* USER CODE BEGIN 2 */
-  Lan_init(&Proto_parse);
-  Servo_init();
-  Pressure_init();
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	//Lan_refresh();
-	HAL_IWDG_Refresh(&hiwdg1);
-	MX_LWIP_Process();
-	Pressure_refresh();
-    /* USER CODE END WHILE */
+	  HAL_IWDG_Refresh(&hiwdg1);
+	  MX_LWIP_Refresh();
+	  /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
   }

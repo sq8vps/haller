@@ -6,7 +6,7 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2022 STMicroelectronics.
+  * <h2><center>&copy; Copyright (c) 2024 STMicroelectronics.
   * All rights reserved.</center></h2>
   *
   * This software component is licensed by ST under Ultimate Liberty license
@@ -40,8 +40,9 @@
 #endif /* WITH_RTOS */
 
 /* USER CODE BEGIN 0 */
- void MX_LWIP_HandleTimeouts(void);
- void MX_LWIP_ProcessRx(void);
+ void MX_LWIP_ProcessFromIsr(void);
+
+ void MX_LWIP_Refresh(void);
 /* USER CODE END 0 */
 
 /* Global Variables ----------------------------------------------------------*/
