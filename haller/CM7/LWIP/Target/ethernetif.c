@@ -480,17 +480,19 @@ static struct pbuf * low_level_input(struct netif *netif)
 //  struct pbuf *p;
 //
 //  /* move received packet into a new pbuf */
-//  while(NULL != (p = low_level_input(netif)))
-//  {
-//	  /* entry point to the LwIP stack */
-//	  err = netif->input(p, netif);
+//  p = low_level_input(netif);
 //
-//	  if (err != ERR_OK)
-//	  {
-//		LWIP_DEBUGF(NETIF_DEBUG, ("ethernetif_input: IP input error\n"));
-//		pbuf_free(p);
-//		p = NULL;
-//	  }
+//  /* no packet could be read, silently ignore this */
+//  if (p == NULL) return;
+//
+//  /* entry point to the LwIP stack */
+//  err = netif->input(p, netif);
+//
+//  if (err != ERR_OK)
+//  {
+//    LWIP_DEBUGF(NETIF_DEBUG, ("ethernetif_input: IP input error\n"));
+//    pbuf_free(p);
+//    p = NULL;
 //  }
 //
 //}
