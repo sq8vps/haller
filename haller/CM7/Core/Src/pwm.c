@@ -1,6 +1,7 @@
 #include "pwm.h"
 #include "stm32h7xx_hal.h"
 
+//timer run at 500 kHz with 10000 reload value = PWM @ 50 Hz
 #define PWM_DELTA 250
 #define PWM_NEUTRAL 500
 
@@ -12,11 +13,15 @@ extern TIM_HandleTypeDef htim17;
 void PwmInit(void)
 {
 	for(uint8_t i = 0; i < 12; i++)
-		PwmSet(i, 0.0f);
+		PwmSet(i, 0.0f, PWM_NEUTRAL, PWM_DELTA);
 }
 
-void PwmSet(uint8_t channel, float value)
+void PwmSet(uint8_t channel, float value, uint32_t neutral, uint32_t delta)
 {
+	//convert from microseconds to 2 us per tick
+	neutral >>= 1;
+	delta >>= 1;
+
 	TIM_HandleTypeDef *htim = NULL;
 	uint32_t chan = 0;
 
@@ -71,13 +76,11 @@ void PwmSet(uint8_t channel, float value)
 			break;
 	}
 
-//	if(value < -1.f)
-//		value = -1.f;
-	if(value < 0.f)
-		value = 0.f;
+	if(value < -1.f)
+		value = -1.f;
 	else if(value > 1.f)
 		value = 1.f;
 
 
-	__HAL_TIM_SET_COMPARE(htim, chan, (int32_t)(value * (float)PWM_DELTA) + (int32_t)PWM_NEUTRAL);
+	__HAL_TIM_SET_COMPARE(htim, chan, (int32_t)(value * (float)delta) + (int32_t)neutral);
 }

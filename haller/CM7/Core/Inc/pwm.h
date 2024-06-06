@@ -6,7 +6,7 @@
 
 void PwmInit(void);
 
-void PwmSet(uint8_t channel, float value);
+void PwmSet(uint8_t channel, float value, uint32_t neutral, uint32_t delta);
 
 
 #endif /* INC_PWM_H_ */

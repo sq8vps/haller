@@ -8,6 +8,9 @@
 
 #define MOTOR_FIRST_PWM_CHANNEL 0
 
+#define MOTOR_NEUTRAL 1000
+#define MOTOR_DELTA 500
+
 static void MotorParse(void *buffer, uint8_t len)
 {
 	if(len < MOTOR_PACKET_LENGTH)
@@ -17,14 +20,19 @@ static void MotorParse(void *buffer, uint8_t len)
 
 	//val[0] - motor 0, val[1] - motor 1 ...
 	for(uint8_t i = 0; i < 6; i++)
-		PwmSet(i + MOTOR_FIRST_PWM_CHANNEL, val[i]);
+	{
+		if(val[i] < 0.f)
+			val[i] = 0.f;
+
+		PwmSet(i + MOTOR_FIRST_PWM_CHANNEL, val[i], MOTOR_NEUTRAL, MOTOR_DELTA);
+	}
 }
 
 static void MotorParseStop(void *buffer, uint8_t len)
 {
 	//stop all motors
 	for(uint8_t i = 0; i < 6; i++)
-		PwmSet(i + MOTOR_FIRST_PWM_CHANNEL, 0.0f);
+		PwmSet(i + MOTOR_FIRST_PWM_CHANNEL, 0.0f, MOTOR_NEUTRAL, MOTOR_DELTA);
 }
 
 void MotorInit(void)

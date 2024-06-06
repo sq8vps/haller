@@ -28,6 +28,7 @@
 #include "motor.h"
 #include "servo.h"
 #include "pwm.h"
+#include "gripper.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -180,6 +181,7 @@ Error_Handler();
   LanInit(&ProtoParse);
   MotorInit();
   ServoInit();
+  GripperInit();
   /* USER CODE END 2 */
 
   /* Infinite loop */

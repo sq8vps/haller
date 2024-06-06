@@ -8,7 +8,10 @@
 #define SERVO_FIRST_PWM_CHANNEL 6
 #define SERVO_COUNT 3 //TODO: unknown for now
 
-#define SERVO_COEFF 0.1f //TODO: unknown for now
+#define SERVO_COEFF (1.f / (3.14f / 2.f)) //-1...1 for -3.14/2...3.14/2
+
+#define SERVO_NEUTRAL 1500
+#define SERVO_DELTA 500
 
 struct ServoPacket
 {
@@ -25,7 +28,7 @@ static void ServoParse(void *buffer, uint8_t len)
 	if(p->number >  SERVO_COUNT)
 		return;
 
-	PwmSet(p->number + SERVO_FIRST_PWM_CHANNEL, p->value * SERVO_COEFF);
+	PwmSet(p->number + SERVO_FIRST_PWM_CHANNEL, p->value * SERVO_COEFF, SERVO_NEUTRAL, SERVO_DELTA);
 }
 
 void ServoInit(void)
