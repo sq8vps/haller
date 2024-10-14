@@ -68,13 +68,13 @@ void MX_LWIP_Refresh(void)
 void MX_LWIP_Init(void)
 {
   /* IP addresses initialization */
-  IP_ADDRESS[0] = 192;
-  IP_ADDRESS[1] = 168;
-  IP_ADDRESS[2] = 69;
-  IP_ADDRESS[3] = 100;
+  IP_ADDRESS[0] = 169;
+  IP_ADDRESS[1] = 254;
+  IP_ADDRESS[2] = 1;
+  IP_ADDRESS[3] = 69;
   NETMASK_ADDRESS[0] = 255;
   NETMASK_ADDRESS[1] = 255;
-  NETMASK_ADDRESS[2] = 255;
+  NETMASK_ADDRESS[2] = 0;
   NETMASK_ADDRESS[3] = 0;
   GATEWAY_ADDRESS[0] = 0;
   GATEWAY_ADDRESS[1] = 0;

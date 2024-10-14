@@ -23,4 +23,5 @@ static void GripperParse(void *buffer, uint8_t len)
 void GripperInit(void)
 {
 	ProtoRegister(GRIPPER_PACKET_ID, &GripperParse);
+	PwmSet(GRIPPER_CHANNEL, 1.f, GRIPPER_NEUTRAL, GRIPPER_DELTA);
 }

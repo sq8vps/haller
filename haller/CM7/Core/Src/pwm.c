@@ -44,7 +44,8 @@ void PwmSet(uint8_t channel, float value, uint32_t neutral, uint32_t delta)
 			htim = &htim3;
 			break;
 		case 4:
-			chan = TIM_CHANNEL_1;
+			//chan = TIM_CHANNEL_1;
+			chan = TIM_CHANNEL_4;
 			htim = &htim4;
 			break;
 		case 5:
@@ -56,8 +57,8 @@ void PwmSet(uint8_t channel, float value, uint32_t neutral, uint32_t delta)
 			htim = &htim4;
 			break;
 		case 7:
-			chan = TIM_CHANNEL_4;
-			htim = &htim4;
+//			chan = TIM_CHANNEL_4;
+//			htim = &htim4;
 			break;
 		case 8:
 			chan = TIM_CHANNEL_1;
@@ -81,6 +82,6 @@ void PwmSet(uint8_t channel, float value, uint32_t neutral, uint32_t delta)
 	else if(value > 1.f)
 		value = 1.f;
 
-
-	__HAL_TIM_SET_COMPARE(htim, chan, (int32_t)(value * (float)delta) + (int32_t)neutral);
+	if(NULL != htim)
+		__HAL_TIM_SET_COMPARE(htim, chan, (int32_t)(value * (float)delta) + (int32_t)neutral);
 }
